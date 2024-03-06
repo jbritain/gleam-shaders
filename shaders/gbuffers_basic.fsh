@@ -3,12 +3,12 @@
 
 uniform sampler2D lightmap;
 
-in vec2 lmcoord;
-in vec4 glcolor;
+in vec2 lmCoord;
+in vec4 glColor;
 
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 color;
 
 void main() {
-	color = glcolor * texture(lightmap, lmcoord);
+	color = glColor * texture(lightmap, lmCoord);
 }

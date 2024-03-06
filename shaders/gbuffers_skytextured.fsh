@@ -3,14 +3,14 @@
 
 uniform sampler2D gtexture;
 
-in vec2 texcoord;
-in vec4 glcolor;
+in vec2 texCoord;
+in vec4 glColor;
 
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 color;
 
 void main() {
-	color = texture(gtexture, texcoord) * glcolor;
+	color = texture(gtexture, texCoord) * glColor;
 	if (color.a < 0.1) {
 		discard;
 	}

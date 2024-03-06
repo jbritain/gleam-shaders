@@ -1,11 +1,11 @@
 #include "/include/glsl_version.glsl"
 #define vsh
 
-out vec2 texcoord;
-out vec4 glcolor;
+out vec2 texCoord;
+out vec4 glColor;
 
 void main() {
 	gl_Position = ftransform();
-	texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-	glcolor = gl_Color;
+	texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+	glColor = gl_Color;
 }
