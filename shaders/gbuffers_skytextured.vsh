@@ -1,4 +1,5 @@
-#version 330 compatibility
+#include "/include/glsl_version.glsl"
+#define vsh
 
 out vec2 texcoord;
 out vec4 glcolor;

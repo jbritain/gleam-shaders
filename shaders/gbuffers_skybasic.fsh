@@ -1,4 +1,5 @@
-#version 330 compatibility
+#include "/include/glsl_version.glsl"
+#define fsh
 
 uniform float viewHeight;
 uniform float viewWidth;

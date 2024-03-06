@@ -1,4 +1,5 @@
-#version 330 compatibility
+#include "/include/glsl_version.glsl"
+#define vsh
 
 out vec4 starData; //rgb = star color, a = flag for weather or not this pixel is a star.
 

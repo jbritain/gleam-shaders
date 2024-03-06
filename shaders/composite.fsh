@@ -1,4 +1,5 @@
-#version 330 compatibility
+#include "/include/glsl_version.glsl"
+#define fsh
 
 uniform sampler2D colortex0;
 
