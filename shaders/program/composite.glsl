@@ -34,7 +34,7 @@ layout(location = 0) out vec4 outColor;
 
 void main() {
   vec3 albedo = texture(colortex0, texCoord).rgb;
-  //albedo = pow(albedo, vec3(2.2)); // gamma correction
+  albedo = pow(albedo, vec3(2.2)); // gamma correction
 
   float depth = texture(depthtex0, texCoord).r;
   if(depth == 1.0){
