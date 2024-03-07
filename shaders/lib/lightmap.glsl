@@ -11,7 +11,7 @@ float attenuateSky(float light){
 
 vec3 getLightmapColor(vec2 lightmap){
   const vec3 artificialLightColor = vec3(0.8, 0.25, 0.08);
-  const vec3 skyLightColor = vec3(0.05, 0.15, 0.3);
+  const vec3 skyLightColor = vec3(1, 1, 0.9);
 
   vec3 artificalLighting = artificialLightColor * attenuateArtificial(lightmap.r);
   vec3 skyLighting = skyLightColor * attenuateSky(lightmap.g);
