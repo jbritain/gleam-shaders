@@ -49,6 +49,8 @@ void main() {
 
   vec3 normal = decodeNormal(texture(colortex1, texCoord).xyz);
   outColor.rgb = getDiffuseShading(albedo, normal, lighting);
+
+  outColor.rgb = pow(outColor.rgb, vec3(1.0/2.2)); // reverse gamma correction
 }
 
 #endif
