@@ -45,8 +45,6 @@ void main() {
   vec2 lightmap = texture(colortex2, texCoord).rg;
   vec3 lighting = getLightmapColor(lightmap);
 
-	
-
   vec3 normal = decodeNormal(texture(colortex1, texCoord).xyz);
   outColor.rgb = getDiffuseShading(albedo, normal, lighting);
 

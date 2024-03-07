@@ -15,7 +15,7 @@ float fogify(float x, float w) {
 }
 
 vec3 calcSkyColor(vec3 pos) {
-	float upDot = dot(pos, gbufferModelView[1].xyz); //not much, what's up with you?
+	float upDot = dot(pos, gbufferModelView[1].xyz);
 	return mix(skyColor, fogColor, fogify(max(upDot, 0.0), 0.25));
 }
 
@@ -30,7 +30,8 @@ layout(location = 0) out vec4 color;
 
 void main() {
 	if (starData.a > 0.5) {
-		color = vec4(starData.rgb, 1.0);
+		//color = vec4(starData.rgb, 1.0);
+		discard;
 	} else {
 		vec3 pos = screenToView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), 1.0));
 		color = vec4(calcSkyColor(normalize(pos)), 1.0);

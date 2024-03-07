@@ -18,3 +18,9 @@ const float sunPathRotation = -40.0;
 #define COLORED_SHADOWS 1 //0: Stained glass will cast ordinary shadows. 1: Stained glass will cast colored shadows. 2: Stained glass will not cast any shadows. [0 1 2]
 
 const int shadowMapResolution = 4096; //Resolution of the shadow map. Higher numbers mean more accurate shadows. [128 256 512 1024 2048 4096 8192]
+
+#define SATURATION 1.4
+
+const vec3 artificialLightColor = vec3(1, 0.725, 0);
+const vec3 skyLightColor = vec3(1, 1, 0.9);
+const vec3 shadowCol = vec3(0.1, 0, 0.2);
