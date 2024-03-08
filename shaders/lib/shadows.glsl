@@ -64,13 +64,9 @@ vec4 getShadowPos(){
 #endif
 
 #ifdef fsh
-bool isInShadow(vec4 shadowPos){
+bool isInShadow(vec4 shadowPos, sampler2D shadowMap){
 	if (shadowPos.w > 0.0) {
-		#if COLORED_SHADOWS == 0
-			return (texture(shadowtex0, shadowPos.xy).r < shadowPos.z);
-		#else
-			return (texture(shadowtex1, shadowPos.xy).r < shadowPos.z);
-		#endif
+		return (texture(shadowMap, shadowPos.xy).r < shadowPos.z);
 	}
 }
 #endif

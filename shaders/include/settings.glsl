@@ -16,14 +16,13 @@ const float sunPathRotation = -40; // [-90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 
 #define NORMAL_BIAS // Offsets the shadow sample position by the surface normal instead of towards the sun
 #define EXCLUDE_FOLIAGE // If true, foliage will not cast shadows.
 #define SHADOW_INTENSITY 0.75 // Light levels are multiplied by this number when the surface is in shadows [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
-#define COLORED_SHADOWS 1 //0: Stained glass will cast ordinary shadows. 1: Stained glass will cast colored shadows. 2: Stained glass will not cast any shadows. [0 1 2]
 
 const int shadowMapResolution = 4096; //Resolution of the shadow map. Higher numbers mean more accurate shadows. [128 256 512 1024 2048 4096 8192]
 
 #define SATURATION 1.4 // [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0]
 
-const vec3 artificialLightColor = vec3(1, 0.725, 0);
-const vec3 sunlightColor = vec3(1, 1, 0.9);
+const vec3 artificialLightColor = vec3(1, 0.725, 0.5);
+const vec3 sunlightColor = vec3(1, 0.95, 0.9);
 const vec3 skylightColor = vec3(0.2, 0.2, 0.4);
 
 #define ARTIFICIAL_LIGHT_BRIGHTNESS 0.1

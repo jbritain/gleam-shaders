@@ -29,6 +29,8 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex2;
 uniform sampler2D colortex3;
 uniform sampler2D shadowtex1;
+uniform sampler2D shadowtex0;
+uniform sampler2D shadowcolor0;
 
 uniform vec3 sunPosition;
 
@@ -62,8 +64,11 @@ void main() {
 
   vec3 sunlight = vec3(0.0);
 
-  if(!isInShadow(shadowPosition)){
+  if(!isInShadow(shadowPosition, shadowtex1)){ // not in shadow
     sunlight = sunlightColor;
+  } if(isInShadow(shadowPosition, shadowtex0)){ // in transparent shadow
+    vec4 shadowColor = texture(shadowcolor0, shadowPosition.xy);
+    sunlight = shadowColor.rgb;
   }
 
   outColor.rgb = albedo * (diffuse + sunlight);
