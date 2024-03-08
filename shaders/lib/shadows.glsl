@@ -25,6 +25,7 @@
 	}
 #endif
 
+#ifdef vsh
 vec4 getShadowPos(){
 	vec4 shadowPos;
 
@@ -53,10 +54,23 @@ vec4 getShadowPos(){
 		#endif
 	}
 	else { //vertex is facing away from the sun
-		lmCoord.y *= SHADOW_BRIGHTNESS; //guaranteed to be in shadows. reduce light level immediately.
+		lmCoord.y *= SHADOW_INTENSITY; //guaranteed to be in shadows. reduce light level immediately.
 		shadowPos = vec4(0.0); //mark that this vertex does not need to check the shadow map.
 	}
 	shadowPos.w = lightDot;
 
 	return shadowPos;
 }
+#endif
+
+#ifdef fsh
+bool isInShadow(vec4 shadowPos){
+	if (shadowPos.w > 0.0) {
+		#if COLORED_SHADOWS == 0
+			return (texture(shadowtex0, shadowPos.xy).r < shadowPos.z);
+		#else
+			return (texture(shadowtex1, shadowPos.xy).r < shadowPos.z);
+		#endif
+	}
+}
+#endif

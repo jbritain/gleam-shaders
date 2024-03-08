@@ -47,6 +47,7 @@ void main(){
   vec3 viewPos = getViewSpacePosition();
 
   outColor = texture(colortex0, texCoord);
+
   calculateFog(outColor.rgb, viewPos);
 
   //outColor = texture(depthtex1, texCoord);

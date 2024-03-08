@@ -47,7 +47,7 @@ in vec2 texCoord;
 in vec4 glColor;
 
 void main() {
-	vec4 color = texture2D(texture, texCoord) * glColor;
+	vec4 color = texture(texture, texCoord) * glColor;
 
 	gl_FragData[0] = color;
 }

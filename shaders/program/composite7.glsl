@@ -15,19 +15,28 @@ void main() {
 
 #ifdef fsh
 
-#define DRAW_TEXTURE colortex0 // [colortex0 colortex1 colortex2 colortex3 shadowtex0 shadowtex1 depthtex0 depthtex1 depthtex2]
-
-uniform sampler2D DRAW_TEXTURE;
+uniform sampler2D colortex0;
 
 in vec2 texCoord;
 
 #include "/lib/util.glsl"
 
+void tonemap(inout vec3 col){
+  col = col / (col + vec3(1.0));
+}
+
 /* DRAWBUFFERS:0 */
 layout(location = 0) out vec4 outColor;
 
 void main(){
-  outColor = texture(DRAW_TEXTURE, texCoord);
+  outColor = texture(colortex0, texCoord);
+
+  tonemap(outColor.rgb);
+  outColor.rgb = pow(outColor.rgb, vec3(1.0/GAMMA)); // gamma correction
+
+  vec4 hsvColor = hsv(outColor);
+  hsvColor.y *= SATURATION;
+  outColor = rgb(hsvColor);
 }
 
 #endif

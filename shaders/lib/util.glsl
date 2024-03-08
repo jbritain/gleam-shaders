@@ -54,3 +54,15 @@ vec4 rgb(vec4 color){
 
    return vec4(r, g, b, color.a);
 }
+
+float pow2(float x){
+    return x * x;
+}
+
+float pow3(float x){
+    return x * x * x;
+}
+
+float pow4(float x){
+    return x * x * x * x;
+}
