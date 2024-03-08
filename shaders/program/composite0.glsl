@@ -49,6 +49,8 @@ void main() {
   vec3 albedo = texture(colortex0, texCoord).rgb;
   vec4 shadowPosition = texture(colortex3, texCoord);
 
+  albedo = pow(albedo, vec3(GAMMA));
+
   float depth = texture(depthtex0, texCoord).r;
   if(depth >= 1.0){ // sky
     outColor.rgb = albedo;
@@ -57,16 +59,14 @@ void main() {
 
   vec2 lightmap = texture(colortex2, texCoord).rg;
 
-  albedo = pow(albedo, vec3(GAMMA));
-
   vec3 normal = decodeNormal(texture(colortex1, texCoord).xyz);
   vec3 diffuse = getDiffuseShading(albedo, normal, lightmap);
 
   vec3 sunlight = vec3(0.0);
 
-  if(!isInShadow(shadowPosition, shadowtex1)){ // not in shadow
+  if (!isInShadow(shadowPosition, shadowtex0)){ // not in shadow
     sunlight = sunlightColor;
-  } if(isInShadow(shadowPosition, shadowtex0)){ // in transparent shadow
+  } else if (!isInShadow(shadowPosition, shadowtex1)){ // in transparent shadow
     vec4 shadowColor = texture(shadowcolor0, shadowPosition.xy);
     sunlight = shadowColor.rgb;
   }
