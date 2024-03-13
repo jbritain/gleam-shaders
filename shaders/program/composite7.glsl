@@ -21,8 +21,13 @@ in vec2 texCoord;
 
 #include "/lib/util.glsl"
 
-void tonemap(inout vec3 col){
-  col = col / (col + vec3(1.0));
+void tonemap(inout vec3 x){
+  const float a = 2.51;
+  const float b = 0.03;
+  const float c = 2.43;
+  const float d = 0.59;
+  const float e = 0.14;
+  x = clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
 
 /* DRAWBUFFERS:0 */
