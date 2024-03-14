@@ -80,7 +80,6 @@ void main() {
 		discard;
 	}
 
-
 	outColor = color;
 	outNormal.xyz = encodeNormal(gl_NormalMatrix * glNormal); // encode the normal into an unsigned format
 	vec2 normalizedLmCoord = (lmCoord * 33.05 / 32.0) - (1.05 / 32); // put in range [0,1]

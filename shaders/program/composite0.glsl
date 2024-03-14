@@ -32,7 +32,8 @@ uniform sampler2D shadowtex1;
 uniform sampler2D shadowtex0;
 uniform sampler2D shadowcolor0;
 
-uniform vec3 sunPosition;
+uniform vec3 shadowLightPosition;
+uniform int worldTime;
 
 #include "/lib/util.glsl"
 #include "/lib/lighting.glsl"
@@ -61,6 +62,17 @@ void main() {
 
   vec3 normal = decodeNormal(texture(colortex1, texCoord).xyz);
   vec3 diffuse = getDiffuseShading(albedo, normal, lightmap);
+
+  vec3 sunlightColor = vec3(1, 0.95, 0.9);
+  if ((worldTime > 23000) || (worldTime < 1000)){
+    sunlightColor = vec3(0.4, 0.3, 0.2);
+  } else if (worldTime < 12000){
+    sunlightColor = vec3(1, 0.95, 0.9);
+  } else if (worldTime < 13000) {
+    sunlightColor = vec3(0.4, 0.3, 0.2);
+  } else {
+    sunlightColor = vec3(0.01, 0.01, 0.01);
+  }
 
   #ifndef SHADOWS
   vec3 sunlight = sunlightColor;
