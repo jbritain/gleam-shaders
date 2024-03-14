@@ -10,9 +10,9 @@ float attenuateSky(float light){
 
 vec3 getDiffuseShading(vec3 albedo, vec3 normal, vec2 lightmap){
   vec3 artificalLighting = artificialLightColor * attenuateArtificial(lightmap.r);
-  vec3 skyLighting = skylightColor * attenuateSky(lightmap.g) * AMBIENT_LIGHT;
+  vec3 skyLighting = skylightColor * attenuateSky(lightmap.g);
 
   float nDotL = max(dot(normal, normalize(sunPosition)), 0.0);
 
-  return (nDotL * skyLighting) + artificalLighting;
+  return (nDotL * skyLighting) + artificalLighting + AMBIENT_LIGHT;
 }

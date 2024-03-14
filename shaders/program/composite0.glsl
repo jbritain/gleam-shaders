@@ -62,6 +62,9 @@ void main() {
   vec3 normal = decodeNormal(texture(colortex1, texCoord).xyz);
   vec3 diffuse = getDiffuseShading(albedo, normal, lightmap);
 
+  #ifndef SHADOWS
+  vec3 sunlight = sunlightColor;
+  #else
   vec3 sunlight = vec3(0.0);
 
   if (!isInShadow(shadowPosition, shadowtex0)){ // not in shadow
@@ -70,6 +73,7 @@ void main() {
     vec4 shadowColor = texture(shadowcolor0, shadowPosition.xy);
     sunlight = shadowColor.rgb;
   }
+  #endif
 
   outColor.rgb = albedo * (diffuse + sunlight);
 

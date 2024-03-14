@@ -54,7 +54,6 @@ vec4 getShadowPos(){
 		#endif
 	}
 	else { //vertex is facing away from the sun
-		lmCoord.y *= SHADOW_INTENSITY; //guaranteed to be in shadows. reduce light level immediately.
 		shadowPos = vec4(0.0); //mark that this vertex does not need to check the shadow map.
 	}
 	shadowPos.w = lightDot;
@@ -65,8 +64,12 @@ vec4 getShadowPos(){
 
 #ifdef fsh
 bool isInShadow(vec4 shadowPos, sampler2D shadowMap){
+	if(shadowPos.xyz == vec3(0.0)){ // definitely in shadow
+		return true;
+	}
 	if (shadowPos.w > 0.0) {
 		return (texture(shadowMap, shadowPos.xy).r < shadowPos.z);
 	}
+	return true;
 }
 #endif

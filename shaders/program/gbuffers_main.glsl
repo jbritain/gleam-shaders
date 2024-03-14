@@ -68,9 +68,11 @@ void main() {
 
 	vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
 
+	#ifdef FOG
 	if(length(eyePlayerPos) >= far){ // discard stuff out of render distance so that `far` is actually as far as anything will be
 		discard;
 	}
+	#endif
 
 	vec4 color = texture(gtexture, texCoord) * glColor;
 
