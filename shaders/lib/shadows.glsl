@@ -50,7 +50,7 @@ vec4 getShadowPos(){
 			vec4 normal = shadowProjection * vec4(mat3(shadowModelView) * (mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal)), 1.0);
 			shadowPos.xyz += normal.xyz / normal.w * bias;
 		#else
-			shadowPos.z -= bias / abs(lightDot);
+			//shadowPos.z -= bias / abs(lightDot);
 		#endif
 	}
 	else { //vertex is facing away from the sun

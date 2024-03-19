@@ -15,7 +15,10 @@ void main() {
 
 #ifdef fsh
 
+uniform mat4 gbufferProjectionInverse;
+
 uniform sampler2D colortex0;
+uniform sampler2D depthtex0;
 
 in vec2 texCoord;
 

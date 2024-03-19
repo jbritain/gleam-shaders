@@ -15,6 +15,10 @@ void main() {
 
 #ifdef fsh
 
+uniform mat4 gbufferProjectionInverse;
+
+uniform sampler2D depthtex0;
+
 #define DRAW_TEXTURE colortex0 // [colortex0 colortex1 colortex2 colortex3 shadowtex0 shadowtex1 shadowcolor0 depthtex0 depthtex1 depthtex2]
 #define DRAW_R
 #define DRAW_G

@@ -22,6 +22,8 @@ void main() {
 
 #ifdef fsh
 
+uniform mat4 gbufferProjectionInverse;
+
 uniform sampler2D depthtex0;
 
 uniform sampler2D colortex0;
@@ -49,6 +51,7 @@ layout(location = 0) out vec4 outColor;
 void main() {
   vec3 albedo = texture(colortex0, texCoord).rgb;
   vec4 shadowPosition = texture(colortex3, texCoord);
+  vec3 viewPos = fragmentViewSpacePos(texCoord);
 
   albedo = pow(albedo, vec3(GAMMA));
 
@@ -74,6 +77,8 @@ void main() {
     sunlightColor = vec3(0.01, 0.01, 0.01);
   }
 
+  vec3 specular = getSpecularShadingFactor(normalize(shadowLightPosition), viewPos, normal, 256, 2.0) * sunlightColor;
+
   #ifndef SHADOWS
   vec3 sunlight = sunlightColor;
   #else
@@ -87,7 +92,7 @@ void main() {
   }
   #endif
 
-  outColor.rgb = albedo * (diffuse + sunlight);
+  outColor.rgb = albedo * (diffuse + sunlight);// + specular);
 
 
 }

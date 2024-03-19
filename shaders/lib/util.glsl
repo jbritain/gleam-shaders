@@ -66,3 +66,12 @@ float pow3(float x){
 float pow4(float x){
     return x * x * x * x;
 }
+
+#ifdef fsh
+vec3 fragmentViewSpacePos(vec2 texCoord){
+    vec3 screenPos = vec3(texCoord, texture2D(depthtex0, texCoord));
+    vec3 ndcPos = screenPos * 2.0 - 1.0;
+    vec3 viewPos = projectAndDivide(gbufferProjectionInverse, ndcPos);
+    return viewPos;
+}
+#endif
