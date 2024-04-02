@@ -97,14 +97,6 @@ void main() {
     shadowAmount = 0;
   }
 
-  
-
-  
-  
-  
-  //  else if (!isInShadow(shadowPosition, shadowtex1)){ // in transparent shadow
-  //   
-  // }
   #endif
 
   vec2 lightmap = texture(colortex2, texCoord).rg;
@@ -113,8 +105,9 @@ void main() {
   float nDotL = max(dot(normal, normalize(shadowLightPosition)), 0.0);
 
   vec3 skyDiffuse = getSkyDiffuse(albedo, nDotL, lightmap, sunlightColor, shadowAmount);
+  vec3 artificialDiffuse = getArtificialDiffuse(albedo, lightmap);
 
-  outColor.rgb = skyDiffuse + (AMBIENT_LIGHT * albedo);
+  outColor.rgb = skyDiffuse + artificialDiffuse + (AMBIENT_LIGHT * albedo);
 
 
 }
