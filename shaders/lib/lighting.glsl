@@ -5,7 +5,8 @@ float attenuateArtificial(float light){
 }
 
 float attenuateSky(float light){
-  return pow4(light);
+  //return pow4(light);
+  return light;
 }
 
 vec3 skylightColor = vec3(0.2, 0.2, 0.4);
@@ -17,12 +18,14 @@ float getSpecularShadingFactor(vec3 lightVector, vec3 viewPos, vec3 normal, floa
   return pow(max(dot(viewVector, reflectionVector), 0.0), shininess) * specularStrength;
 }
 
-vec3 getDiffuseShading(vec3 albedo, vec3 normal, vec2 lightmap){
-  vec3 artificalLighting = artificialLightColor * attenuateArtificial(lightmap.r);
-  vec3 skyLighting = skylightColor * attenuateSky(lightmap.g);
+vec3 getSkyDiffuse(vec3 albedo, float nDotL, vec2 lightmap, vec3 sunlightColor, float shadow){
+  vec3 skyLighting = sunlightColor * attenuateSky(lightmap.g);
 
-  float nDotL = max(dot(normal, normalize(shadowLightPosition)), 0.0);
-
-  return (nDotL * skyLighting) + artificalLighting + AMBIENT_LIGHT;
+  return albedo * (nDotL * skyLighting) * (1.0 - shadow);
 }
 
+vec3 getArtificialDiffuse(vec3 albedo, vec2 lightmap){
+  vec3 artificalLighting = artificialLightColor * attenuateArtificial(lightmap.r);
+
+  return albedo * artificalLighting;
+}

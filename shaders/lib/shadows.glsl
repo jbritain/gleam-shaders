@@ -50,7 +50,7 @@ vec4 getShadowPos(){
 			vec4 normal = shadowProjection * vec4(mat3(shadowModelView) * (mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal)), 1.0);
 			shadowPos.xyz += normal.xyz / normal.w * bias;
 		#else
-			//shadowPos.z -= bias / abs(lightDot);
+			shadowPos.z -= bias / abs(lightDot);
 		#endif
 	}
 	else { //vertex is facing away from the sun
@@ -63,13 +63,44 @@ vec4 getShadowPos(){
 #endif
 
 #ifdef fsh
-bool isInShadow(vec4 shadowPos, sampler2D shadowMap){
+float isInShadow(vec4 shadowPos, sampler2D shadowMap){
 	if(shadowPos.xyz == vec3(0.0)){ // definitely in shadow
-		return true;
+		return 1.0;
 	}
 	if (shadowPos.w > 0.0) {
-		return (texture(shadowMap, shadowPos.xy).r < shadowPos.z);
+		return step(texture(shadowMap, shadowPos.xy).r, shadowPos.z); // check if depth is greater than in shadow map
 	}
-	return true;
+	return 1.0;
+}
+
+
+float getPCFShadow(vec4 shadowPos, sampler2D shadowMap, float penumbraWidth){
+
+	float shadowAccum = 0.0;
+
+	int samples = 0;
+
+	for (int x = -PCF_SAMPLE_COUNT; x <= PCF_SAMPLE_COUNT; x++){
+		for (int y = -PCF_SAMPLE_COUNT; y <= PCF_SAMPLE_COUNT; y++){
+			float xOffset = x * penumbraWidth / PCF_SAMPLE_COUNT;
+			float yOffset = y * penumbraWidth / PCF_SAMPLE_COUNT;
+
+
+			vec2 offset = vec2(xOffset,yOffset);
+			vec4 offsetShadowPos = shadowPos + vec4(offset, 0, 0);
+			shadowAccum += isInShadow(offsetShadowPos, shadowMap);
+			samples++;
+		}
+	}
+
+	return shadowAccum / samples;
+}
+
+float getPenumbraSize(vec4 shadowPos, sampler2D shadowMap) {
+	float blockerDepth = texture(shadowMap, shadowPos.xy).r;
+	float receiverDepth = shadowPos.z;
+	float sunWidth = 0.92;
+	
+	return (receiverDepth - blockerDepth) * sunWidth / blockerDepth;
 }
 #endif

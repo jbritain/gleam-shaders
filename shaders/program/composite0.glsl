@@ -45,8 +45,9 @@ uniform int worldTime;
 in vec2 texCoord;
 in vec4 lmCoord;
 
-/* DRAWBUFFERS:0 */
+/* DRAWBUFFERS:04 */
 layout(location = 0) out vec4 outColor;
+layout(location = 1) out vec4 outPenumbra;
 
 void main() {
   vec3 albedo = texture(colortex0, texCoord).rgb;
@@ -61,11 +62,6 @@ void main() {
     return;
   }
 
-  vec2 lightmap = texture(colortex2, texCoord).rg;
-
-  vec3 normal = decodeNormal(texture(colortex1, texCoord).xyz);
-  vec3 diffuse = getDiffuseShading(albedo, normal, lightmap);
-
   vec3 sunlightColor = vec3(1, 0.95, 0.9);
   if ((worldTime > 23000) || (worldTime < 1000)){
     sunlightColor = vec3(0.4, 0.3, 0.2);
@@ -77,22 +73,48 @@ void main() {
     sunlightColor = vec3(0.01, 0.01, 0.01);
   }
 
-  vec3 specular = getSpecularShadingFactor(normalize(shadowLightPosition), viewPos, normal, 256, 2.0) * sunlightColor;
 
   #ifndef SHADOWS
   vec3 sunlight = sunlightColor;
   #else
   vec3 sunlight = vec3(0.0);
 
-  if (!isInShadow(shadowPosition, shadowtex0)){ // not in shadow
-    sunlight = sunlightColor;
-  } else if (!isInShadow(shadowPosition, shadowtex1)){ // in transparent shadow
+  // check for transparent shadows
+  float transparentPenumbraSize = getPenumbraSize(shadowPosition, shadowtex0);
+  float transparentShadowAmount = getPCFShadow(shadowPosition, shadowtex0, max(transparentPenumbraSize, pow2(PCF_SAMPLE_COUNT)/shadowMapResolution));
+  transparentShadowAmount = clamp(transparentShadowAmount, 0, 1);
+
+  // check for non transparent shadows
+  float opaquePenumbraSize = getPenumbraSize(shadowPosition, shadowtex1);
+  float opaqueShadowAmount = getPCFShadow(shadowPosition, shadowtex1, max(opaquePenumbraSize, pow2(PCF_SAMPLE_COUNT)/shadowMapResolution));
+  opaqueShadowAmount = clamp(opaqueShadowAmount, 0, 1);
+
+  float shadowAmount = max(opaqueShadowAmount, transparentShadowAmount);
+
+  if (opaqueShadowAmount < transparentShadowAmount){
     vec4 shadowColor = texture(shadowcolor0, shadowPosition.xy);
-    sunlight = shadowColor.rgb;
+    sunlightColor = mix(sunlightColor, shadowColor.rgb, transparentShadowAmount);
+    shadowAmount = 0;
   }
+
+  
+
+  
+  
+  
+  //  else if (!isInShadow(shadowPosition, shadowtex1)){ // in transparent shadow
+  //   
+  // }
   #endif
 
-  outColor.rgb = albedo * (diffuse + sunlight);// + specular);
+  vec2 lightmap = texture(colortex2, texCoord).rg;
+  vec3 normal = decodeNormal(texture(colortex1, texCoord).xyz);
+
+  float nDotL = max(dot(normal, normalize(shadowLightPosition)), 0.0);
+
+  vec3 skyDiffuse = getSkyDiffuse(albedo, nDotL, lightmap, sunlightColor, shadowAmount);
+
+  outColor.rgb = skyDiffuse + (AMBIENT_LIGHT * albedo);
 
 
 }

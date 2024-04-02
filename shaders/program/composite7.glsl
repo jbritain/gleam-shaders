@@ -24,13 +24,14 @@ in vec2 texCoord;
 
 #include "/lib/util.glsl"
 
-void tonemap(inout vec3 x){
-  const float a = 2.51;
-  const float b = 0.03;
-  const float c = 2.43;
-  const float d = 0.59;
-  const float e = 0.14;
-  x = clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+vec3 tonemap(vec3 v){
+  v *= 0.6f;
+  float a = 2.51f;
+  float b = 0.03f;
+  float c = 2.43f;
+  float d = 0.59f;
+  float e = 0.14f;
+  return clamp((v*(a*v+b))/(v*(c*v+d)+e), 0.0f, 1.0f);
 }
 
 /* DRAWBUFFERS:0 */
@@ -39,11 +40,12 @@ layout(location = 0) out vec4 outColor;
 void main(){
   outColor = texture(colortex0, texCoord);
 
-  tonemap(outColor.rgb);
+  outColor.rgb = tonemap(outColor.rgb);
   outColor.rgb = pow(outColor.rgb, vec3(1.0/GAMMA)); // gamma correction
 
   vec4 hsvColor = hsv(outColor);
-  hsvColor.y *= SATURATION;
+  hsvColor.g *= SATURATION;
+  hsvColor.b *= BRIGHTNESS;
   outColor = rgb(hsvColor);
 }
 

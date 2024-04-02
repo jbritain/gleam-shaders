@@ -49,8 +49,6 @@ void main(){
   outColor = texture(colortex0, texCoord);
 
   calculateFog(outColor.rgb, viewPos);
-
-  //outColor = texture(depthtex1, texCoord);
   
 }
 
