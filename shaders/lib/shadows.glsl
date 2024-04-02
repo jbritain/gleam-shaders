@@ -4,24 +4,9 @@
 		return vec3(pos.xy / factor, pos.z * 0.5);
 	}
 
-	//returns the reciprocal of the derivative of our distort function,
-	//multiplied by SHADOW_BIAS.
-	//if a texel in the shadow map contains a bigger area,
-	//then we need more bias. therefore, we need to know how much
-	//bigger or smaller a pixel gets as a result of applying sistortion.
-	float computeBias(vec3 pos) {
-		//square(length(pos.xy) + SHADOW_DISTORT_FACTOR) / SHADOW_DISTORT_FACTOR
-		float numerator = length(pos.xy) + SHADOW_DISTORT_FACTOR;
-		numerator *= numerator;
-		return SHADOW_BIAS / shadowMapResolution * numerator / SHADOW_DISTORT_FACTOR;
-	}
 #else
 	vec3 distort(vec3 pos) {
 		return vec3(pos.xy, pos.z * 0.5);
-	}
-
-	float computeBias(vec3 pos) {
-		return SHADOW_BIAS / shadowMapResolution;
 	}
 #endif
 
@@ -37,25 +22,15 @@ vec4 getShadowPos(){
 	#endif
 
 	vec4 viewPos = gl_ModelViewMatrix * gl_Vertex;
-	if (lightDot > 0.0) { //vertex is facing towards the sun
+	// if (lightDot > 0.0) { //vertex is facing towards the sun
 		vec4 playerPos = gbufferModelViewInverse * viewPos;
 		shadowPos = shadowProjection * (shadowModelView * playerPos); //convert to shadow ndc space.
-		float bias = computeBias(shadowPos.xyz);
 		shadowPos.xyz = distort(shadowPos.xyz); //apply shadow distortion
 		shadowPos.xyz = shadowPos.xyz * 0.5 + 0.5; //convert from -1 ~ +1 to 0 ~ 1
-		//apply shadow bias.
-		#ifdef NORMAL_BIAS
-			//we are allowed to project the normal because shadowProjection is purely a scalar matrix.
-			//a faster way to apply the same operation would be to multiply by shadowProjection[0][0].
-			vec4 normal = shadowProjection * vec4(mat3(shadowModelView) * (mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal)), 1.0);
-			shadowPos.xyz += normal.xyz / normal.w * bias;
-		#else
-			shadowPos.z -= bias / abs(lightDot);
-		#endif
-	}
-	else { //vertex is facing away from the sun
-		shadowPos = vec4(0.0); //mark that this vertex does not need to check the shadow map.
-	}
+	// }
+	// else { //vertex is facing away from the sun
+	// 	shadowPos = vec4(0.0); //mark that this vertex does not need to check the shadow map.
+	// }
 	shadowPos.w = lightDot;
 
 	return shadowPos;
@@ -68,39 +43,28 @@ float isInShadow(vec4 shadowPos, sampler2D shadowMap){
 		return 1.0;
 	}
 	if (shadowPos.w > 0.0) {
-		return step(texture(shadowMap, shadowPos.xy).r, shadowPos.z); // check if depth is greater than in shadow map
+		return step(texture(shadowMap, shadowPos.xy).r, shadowPos.z - SHADOW_BIAS); // check if depth is greater than in shadow map
 	}
 	return 1.0;
 }
 
+float getPCFShadow (vec4 shadowPos, sampler2D shadowMap, float rAngle){
 
-float getPCFShadow(vec4 shadowPos, sampler2D shadowMap, float penumbraWidth){
-
-	float shadowAccum = 0.0;
+	float cosT = cos(rAngle);
+	float sinT = sin(rAngle);
+	mat2 rot = mat2(cosT, -sinT, sinT, cosT) / shadowMapResolution;
 
 	int samples = 0;
+	float shadowAccum = 0;
 
 	for (int x = -PCF_SAMPLE_COUNT; x <= PCF_SAMPLE_COUNT; x++){
 		for (int y = -PCF_SAMPLE_COUNT; y <= PCF_SAMPLE_COUNT; y++){
-			float xOffset = x * penumbraWidth / PCF_SAMPLE_COUNT;
-			float yOffset = y * penumbraWidth / PCF_SAMPLE_COUNT;
-
-
-			vec2 offset = vec2(xOffset,yOffset);
-			vec4 offsetShadowPos = shadowPos + vec4(offset, 0, 0);
-			shadowAccum += isInShadow(offsetShadowPos, shadowMap);
+			vec2 offset = rot * vec2(x, y);
+			shadowAccum += isInShadow(shadowPos + vec4(offset, 0, 0), shadowMap);
 			samples++;
 		}
 	}
 
 	return shadowAccum / samples;
-}
-
-float getPenumbraSize(vec4 shadowPos, sampler2D shadowMap) {
-	float blockerDepth = texture(shadowMap, shadowPos.xy).r;
-	float receiverDepth = shadowPos.z;
-	float sunWidth = 0.92;
-	
-	return (receiverDepth - blockerDepth) * sunWidth / blockerDepth;
 }
 #endif
