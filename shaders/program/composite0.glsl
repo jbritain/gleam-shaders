@@ -1,3 +1,5 @@
+// SHADOWS AND LIGHTING
+
 #include "/include/settings.glsl"
 
 #ifdef vsh
@@ -66,20 +68,27 @@ void main() {
     return;
   }
 
-  vec4 shadowColor = vec4(0.0);
+  
 
   vec2 lightmap = texture(colortex2, texCoord).rg;
   vec3 normal = decodeNormal(texture(colortex1, texCoord).xyz);
 
+  float shadow = 0;
+  vec4 shadowColor = vec4(0);
+
+  #ifdef SHADOWS
   float rAngle = texture2D(noisetex, texCoord * 20.0).r * 100.0;
-  float shadow = getPCFShadow(shadowPosition, shadowtex1, rAngle);
+  shadow = getPCFShadow(shadowPosition, shadowtex1, rAngle);
+
+  #ifdef COLORED_SHADOWS
 
   if (shadow != 1.0){
     if(getPCFShadow(shadowPosition, shadowtex0, rAngle) != 0){
-      shadowColor = texture2D(shadowcolor0, shadowPosition.xy);
+      shadowColor = getPCFShadowColor(shadowPosition, shadowtex0, shadowcolor0, rAngle);
     }
-    
   }
+  #endif
+  #endif
 
   float nDotL = max(dot(normal, normalize(shadowLightPosition)), 0.0);
 
@@ -87,7 +96,9 @@ void main() {
 
   vec3 diffuse = getDiffuse(albedo, playerSpaceNormal, nDotL, lightmap, shadow, shadowColor);
 
-  outColor.rgb = diffuse + (AMBIENT_LIGHT * albedo);
+  outColor.rgb = diffuse;
+  
+
 
 
 }

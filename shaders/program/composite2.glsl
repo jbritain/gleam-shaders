@@ -1,4 +1,5 @@
-// FOG and BLOOM THRESHOLD
+// BLOOM - horizontal pass
+// calculates based on colortex4 which is written to by composite1
 
 #include "/include/settings.glsl"
 
@@ -20,20 +21,22 @@ void main() {
 #ifdef fsh
 
 uniform sampler2D colortex0;
+uniform sampler2D colortex4;
 uniform sampler2D depthtex0;
 
-uniform vec3 skyColor;
-uniform vec3 fogColor;
 uniform float far;
 
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferModelViewInverse;
 uniform mat4 gbufferProjectionInverse;
 
+uniform float viewWidth;
+uniform float viewHeight;
+
 in vec2 texCoord;
 
-#include "/lib/fog.glsl"
 #include "/lib/util.glsl"
+#include "/lib/blur.glsl"
 
 vec3 getViewSpacePosition(){
   vec3 screenPos = vec3(texCoord, texture(depthtex0, texCoord));
@@ -43,19 +46,13 @@ vec3 getViewSpacePosition(){
 
 /* DRAWBUFFERS:04 */
 layout(location = 0) out vec4 outColor;
-layout(location = 1) out vec4 outColorBloom;
+layout(location = 1) out vec4 outBloomColor;
 
 void main(){
-
-  vec3 viewPos = getViewSpacePosition();
-
   outColor = texture(colortex0, texCoord);
-
-
-  calculateFog(outColor.rgb, viewPos);
-
-  outColorBloom.rgb = outColor.rgb;
-  
+  #ifdef BLOOM
+  outBloomColor = blur13(colortex4, texCoord, vec2(1, 0));
+  #endif
 }
 
 #endif

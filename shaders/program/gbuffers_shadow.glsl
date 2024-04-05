@@ -8,6 +8,7 @@ uniform vec3 shadowLightPosition;
 uniform mat4 gbufferModelViewInverse;
 uniform mat4 shadowProjection;
 uniform mat4 shadowModelView;
+uniform vec3 sunPosition;
 
 out vec2 texCoord;
 out vec2 lmCoord;

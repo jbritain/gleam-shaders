@@ -6,6 +6,7 @@ uniform mat4 gbufferModelViewInverse;
 uniform mat4 shadowModelView;
 uniform mat4 shadowProjection;
 uniform vec3 shadowLightPosition;
+uniform vec3 sunPosition;
 
 in vec3 mc_Entity;
 
